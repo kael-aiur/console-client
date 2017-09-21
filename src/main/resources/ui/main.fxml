@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2017 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextArea?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="net.bingosoft.console.client.controller.MainController"
+            prefHeight="400.0" prefWidth="600.0">
+    <center>
+    <VBox fx:id="mainVBox">
+        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        <FlowPane>
+            <Label text="用户："/>
+            <ChoiceBox fx:id="userSelector"/>
+            <Label text="应用："/>
+            <ChoiceBox fx:id="clientSelector"/>
+            <Button text="调试控制台" onAction="#showDebugger"/>
+        </FlowPane>
+        <Separator minHeight="10" minWidth="NaN"/>
+        <FlowPane>
+            <Label text="访问令牌："/>
+            <TextField fx:id="atTextField" editable="false" prefWidth="300"/>
+            <Button text="获取" fx:id="getAtButton" onAction="#getAccessToken"/>
+        </FlowPane>
+    </VBox>
+    </center>
+    <bottom>
+        <TextArea fx:id="logConsole" editable="false" wrapText="true" minHeight="300"></TextArea>
+    </bottom>
+</BorderPane>
