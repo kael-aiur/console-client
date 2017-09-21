@@ -39,11 +39,11 @@ public class ApiManagerTester implements Tester {
 
     @Override
     public <T extends Event> void runTest(T e) {
-        log.log("创建API");
+        log.info("创建API");
         RestApi api = client.createApi();
-        log.log("创建API成功："+api.getId());
-        log.log("删除API："+api.getId());
+        log.info("创建API成功："+api.getId());
+        log.info("删除API："+api.getId());
         client.deleteApi(api.getId());
-        log.log("删除API成功："+api.getId());
+        log.info("删除API成功："+api.getId());
     }
 }

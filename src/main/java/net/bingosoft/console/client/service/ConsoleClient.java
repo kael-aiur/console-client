@@ -21,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ChoiceBox;
 import leap.core.annotation.Bean;
 import leap.core.annotation.Inject;
+import leap.lang.Strings;
 import leap.lang.http.ContentTypes;
 import leap.lang.http.HTTP;
 import leap.lang.http.client.HttpClient;
@@ -31,6 +32,7 @@ import net.bingosoft.console.client.model.Client;
 import net.bingosoft.console.client.model.RestApi;
 import net.bingosoft.console.client.model.ServerConfig;
 import net.bingosoft.console.client.model.User;
+import net.bingosoft.console.client.support.Logger;
 
 import java.util.Map;
 import java.util.Objects;
@@ -42,6 +44,8 @@ import java.util.UUID;
 @Bean
 public class ConsoleClient implements EventHandler<ActionEvent> {
 
+    private @Inject Logger log;
+    
     public String getAccessToken(){
         return getAccessToken(selectedUser,selectedClient);
     }
@@ -54,7 +58,15 @@ public class ConsoleClient implements EventHandler<ActionEvent> {
         request.addFormParam("password", u.getPassword());
         request.addFormParam("client_id", c.getClientId());
         request.addFormParam("client_secret", c.getSecret());
+        
+        String send = Strings.format("\nPOST {0} \nparams:grant_type={1}&username={2}&password={3}&client_id={4}&client_secret={5}",
+                url,"password",u.getLoginId(),u.getPassword(),c.getClientId(),c.getSecret());
+        log.debug(send);
+        HttpResponse response = request.post();
+        int status = response.getStatus();
         String content = request.post().getString();
+        String resp = Strings.format("\nstatus:{0}\ncontent:{1}",status,content);
+        log.debug(resp);
         Map<String, Object> map = JSON.decodeMap(content);
         String token = Objects.toString(map.get("access_token"));
         return token;

@@ -17,10 +17,17 @@
 package net.bingosoft.console.client.support;
 
 import javafx.scene.control.TextArea;
+import leap.lang.Arrays2;
+import leap.lang.Strings;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author kael.
@@ -29,6 +36,8 @@ public class ConsoleOutputStream extends OutputStream {
     
     private final PrintStream ps;
     private final TextArea c;
+    private final List<Byte> sw = new LinkedList<>();
+    
     public ConsoleOutputStream(PrintStream ps,TextArea c) {
         this.ps = ps;
         this.c =c;
@@ -37,6 +46,16 @@ public class ConsoleOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
         ps.write(b);
-        c.appendText((char)b+"");
+        synchronized (sw){
+            sw.add((byte) b);
+            if(b == '\n'){
+                byte[] bs = new byte[sw.size()];
+                for(int i = 0; i < bs.length; i++){
+                    bs[i] = sw.get(i);
+                }
+                c.appendText(Strings.newStringUtf8(bs));
+                sw.clear();
+            }
+        }
     }
 }

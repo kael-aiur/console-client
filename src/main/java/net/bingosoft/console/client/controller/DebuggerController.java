@@ -35,7 +35,7 @@ public class DebuggerController {
         System.setOut(new PrintStream(cos));
     }
 
-    public void clearDebugger(ActionEvent actionEvent) {
+    public void clearDebugger() {
         consoleWriter.clear();
     }
 }
