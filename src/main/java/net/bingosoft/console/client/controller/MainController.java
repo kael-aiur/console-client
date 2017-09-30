@@ -19,6 +19,7 @@ package net.bingosoft.console.client.controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
@@ -91,10 +92,13 @@ public class MainController {
         clientSelector.setValue(c);
 
         app.getBeanFactory().getBeans(Tester.class).forEach(tester -> {
-            Separator separator = new Separator();
-            separator.setMinHeight(10);
-            mainVBox.getChildren().add(separator);
-            mainVBox.getChildren().add(tester.getNode());
+            Node n = tester.getNode();
+            if(null != n){
+                Separator separator = new Separator();
+                separator.setMinHeight(10);
+                mainVBox.getChildren().add(separator);
+                mainVBox.getChildren().add(tester.getNode());
+            }
         });
         
     }

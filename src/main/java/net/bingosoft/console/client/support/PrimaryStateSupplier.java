@@ -14,27 +14,27 @@
  *  limitations under the License.
  */
 
-package net.bingosoft.console.client.controller;
+package net.bingosoft.console.client.support;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import net.bingosoft.console.client.support.ConsoleOutputStream;
+import javafx.stage.Stage;
+import leap.core.annotation.Bean;
 
-import java.io.PrintStream;
+import java.util.function.Supplier;
 
 /**
  * @author kael.
  */
-public class DebuggerController {
-
-    private @FXML TextArea consoleWriter;
+@Bean
+public class PrimaryStateSupplier implements Supplier<Stage> {
     
-    public void init(){
-        ConsoleOutputStream cos = new ConsoleOutputStream(System.out,consoleWriter);
-        System.setOut(new PrintStream(cos));
+    protected Stage primary;
+    
+    @Override
+    public Stage get() {
+        return primary;
     }
-
-    public void clearDebugger() {
-        consoleWriter.clear();
+    
+    public void set(Stage stage){
+        this.primary = stage;
     }
 }

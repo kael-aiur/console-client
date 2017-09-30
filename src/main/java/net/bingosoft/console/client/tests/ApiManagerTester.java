@@ -26,7 +26,6 @@ import net.bingosoft.console.client.support.Logger;
 /**
  * @author kael.
  */
-@Bean
 public class ApiManagerTester implements Tester {
     
     protected @Inject ConsoleClient client;

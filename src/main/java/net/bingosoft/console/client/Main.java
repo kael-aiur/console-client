@@ -25,6 +25,7 @@ import leap.core.AppContext;
 import net.bingosoft.console.client.controller.DebuggerController;
 import net.bingosoft.console.client.controller.MainController;
 import net.bingosoft.console.client.support.Logger;
+import net.bingosoft.console.client.support.PrimaryStateSupplier;
 
 /**
  * @author kael.
@@ -41,9 +42,11 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Logger log = app.getBeanFactory().getBean(Logger.class);
+        app.getBeanFactory().getBean(PrimaryStateSupplier.class).set(stage);
         
         FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/ui/main.fxml"));
         FXMLLoader debuggerLoader = new FXMLLoader(getClass().getResource("/ui/debugger.fxml"));
+        
         Parent main = mainLoader.load();
         Parent debugger = debuggerLoader.load();
         MainController controller = mainLoader.getController();
@@ -56,11 +59,13 @@ public class Main extends Application {
         Stage debugStage = new Stage();
         debugStage.setScene(dscene);
         debugStage.setTitle("调试控制台");
+        debugStage.initOwner(stage);
         controller.setDebugger(debugStage);
         log.debug("create main scene");
         Scene scene = new Scene(main);
         stage.setTitle("Console客户端测试工具");
         stage.setScene(scene);
+        
         stage.show();
     }
 }
