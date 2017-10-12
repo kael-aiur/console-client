@@ -21,12 +21,10 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import leap.core.annotation.Bean;
 import leap.core.annotation.Inject;
 import net.bingosoft.console.client.support.Logger;
 import net.bingosoft.console.client.support.PrimaryStateSupplier;
@@ -37,7 +35,6 @@ import java.io.IOException;
 /**
  * @author kael.
  */
-@Bean
 public class ApiImporter implements Tester {
     
     protected @Inject Logger log;

@@ -17,22 +17,66 @@
 package net.bingosoft.console.client.service;
 
 import leap.core.BeanFactory;
+import leap.core.annotation.Bean;
 import leap.core.ioc.PostCreateBean;
+import leap.lang.Chars;
+import leap.lang.Charsets;
+import leap.lang.New;
+import leap.lang.Strings;
+import leap.lang.codec.Base64;
+import leap.lang.http.ContentTypes;
+import leap.lang.http.HTTP;
+import leap.lang.json.JSON;
+import net.bingosoft.console.client.model.ESQuery;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author kael.
  */
+@Bean
 public class ESClient implements PostCreateBean{
     
     private RestClient restClient;
 
+    private String user = "elastic";
+    private String password = "8rmc3ZJ9yr";
+    
     @Override
     public void postCreate(BeanFactory factory) throws Throwable {
-        
-        
-        
-        restClient = RestClient.builder(new HttpHost("localhost", 9200, "http")).build();
+        String basic = Base64.encode(Strings.format("{0}:{1}",user,password));
+        String header = Strings.format("Basic {0}",basic);
+        restClient = RestClient.builder(new HttpHost("10.201.76.136", 9200, "http"))
+                .setDefaultHeaders(new Header[]{new BasicHeader("Authorization",header)})
+                .build();
+    }
+    
+    public Map<String,Object> query(ESQuery query){
+        try {
+            Response resp = restClient.performRequest(HTTP.Method.GET.name(),query.getEndpoint(), New.hashMap(),query.getEntity());
+            Map<String,Object> res;
+            try (InputStream is = resp.getEntity().getContent();
+                 InputStreamReader bis = new InputStreamReader(is, Charsets.UTF_8_NAME);
+                 BufferedReader br = new BufferedReader(bis)){
+                res = JSON.decode(br);
+            }
+            return res;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
