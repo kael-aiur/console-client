@@ -31,7 +31,9 @@ public class DebuggerController {
     
     public void init(){
         ConsoleOutputStream cos = new ConsoleOutputStream(System.out,consoleWriter);
+        ConsoleOutputStream err = new ConsoleOutputStream(System.err,consoleWriter);
         System.setOut(new PrintStream(cos));
+        System.setErr(new PrintStream(err));
     }
 
     public void clearDebugger() {

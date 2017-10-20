@@ -16,6 +16,7 @@
 
 package net.bingosoft.console.client.support;
 
+import javafx.application.Platform;
 import leap.core.annotation.Bean;
 import leap.lang.Strings;
 
@@ -31,28 +32,35 @@ public class Logger {
     private Appendable appendable = System.out;
     
     public void debug(String log){
-        StackTraceElement[] ses = Thread.currentThread().getStackTrace();
-        String se = "";
-        for(int i = 0; i < ses.length; i++ ){
-            if(ses[i].getClassName().equals(this.getClass().getName())){
-                StackTraceElement s = ses[i+1];
-                se = s.getClassName()+"."+s.getMethodName()+"(in line:"+s.getLineNumber()+")";
-                break;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                StackTraceElement[] ses = Thread.currentThread().getStackTrace();
+                String se = "";
+                for(int i = 0; i < ses.length; i++ ){
+                    if(ses[i].getClassName().equals(this.getClass().getName())){
+                        StackTraceElement s = ses[i+1];
+                        se = s.getClassName()+"."+s.getMethodName()+"(in line:"+s.getLineNumber()+")";
+                        break;
+                    }
+                }
+                String t = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                String l = Strings.format("{0}-[{1}] DEBUG: {2}",t,se,log);
+                System.out.println(l);
             }
-        }
-        String t = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String l = Strings.format("{0}-[{1}] DEBUG: {2}",t,se,log);
-        System.out.println(l);
+        });
     }
     
     public void info(String log){
-        try {
-            debug(log);
-            appendable.append(log);
-            appendable.append("\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        debug(log);
+        Platform.runLater(() -> {
+            try {
+                appendable.append(log);
+                appendable.append("\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
     public void setAppendable(Appendable appendable) {
         this.appendable = appendable;

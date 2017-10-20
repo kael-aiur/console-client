@@ -19,9 +19,10 @@
     <base-package>net.bingosoft.console.client</base-package>
     
     <properties prefix="server">
-        <property name="base">https://developer.bingosoft.net:12100</property>
+        <property name="base_dev">https://developer.bingosoft.net:12100</property>
+        <property name="base">http://localhost:9080</property>
         <property name="gw">${server.base}</property>
-        <property name="sso">${server.base}/ssov3</property>
+        <property name="sso">${server.base_dev}/ssov3</property>
         <property name="console">${server.base}/console</property>
     </properties>
 </config>

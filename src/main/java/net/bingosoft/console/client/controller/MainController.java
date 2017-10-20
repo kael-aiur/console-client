@@ -103,6 +103,10 @@ public class MainController {
         
     }
     
+    public void clearInfo(){
+        logConsole.clear();
+    }
+    
     public void showDebugger(){
         debugger.show();
     }

@@ -1,0 +1,25 @@
+{
+  "version":"1.0",
+  "scopes":[
+    {
+      "apiName":"qweqweqe",
+      "name":"导入权限1",
+      "code":"importScope1",
+      "category":"分类1",
+      "type":"custom"
+    },
+    {
+      "apiName":"qweqweqe",
+      "name":"导入权限2",
+      "code":"importScope2",
+      "category":"分类1",
+      "type":"perm"
+    },
+    {
+      "apiName":"qweqweqe",
+      "name":"导入权限3",
+      "code":"importScope3",
+      "category":"分类2"
+    }
+  ]
+}

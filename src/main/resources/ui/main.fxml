@@ -49,6 +49,9 @@
     </VBox>
     </center>
     <bottom>
-        <TextArea fx:id="logConsole" editable="false" wrapText="true" minHeight="300"></TextArea>
+        <VBox>
+            <Button text="清空控制台" onAction="#clearInfo"/>
+            <TextArea fx:id="logConsole" editable="false" wrapText="true" minHeight="300"></TextArea>
+        </VBox>
     </bottom>
 </BorderPane>

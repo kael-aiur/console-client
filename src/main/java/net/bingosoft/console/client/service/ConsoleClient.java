@@ -22,21 +22,26 @@ import javafx.scene.control.ChoiceBox;
 import leap.core.annotation.Bean;
 import leap.core.annotation.Inject;
 import leap.lang.Strings;
+import leap.lang.convert.Converts;
 import leap.lang.http.ContentTypes;
 import leap.lang.http.HTTP;
+import leap.lang.http.Headers;
 import leap.lang.http.client.HttpClient;
 import leap.lang.http.client.HttpRequest;
 import leap.lang.http.client.HttpResponse;
 import leap.lang.json.JSON;
+import leap.lang.json.JsonObject;
 import net.bingosoft.console.client.model.Client;
 import net.bingosoft.console.client.model.RestApi;
 import net.bingosoft.console.client.model.ServerConfig;
 import net.bingosoft.console.client.model.User;
 import net.bingosoft.console.client.support.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author kael.
@@ -72,7 +77,7 @@ public class ConsoleClient implements EventHandler<ActionEvent> {
         return token;
     }
     
-    public RestApi createApi(){
+    public RestApi createApi(String name){
         String json = "{" +
                 "\"enableExplorer\":true," +
                 "\"visibility\":\"Public\"," +
@@ -93,8 +98,8 @@ public class ConsoleClient implements EventHandler<ActionEvent> {
                 "}";
         Map<String, Object> api = JSON.decodeMap(json);
         api.put("title","UI客户端创建API");
-        api.put("name", UUID.randomUUID().toString());
-        HttpResponse response = request(config.getConsole()+"/api")
+        api.put("name", name);
+        HttpResponse response = consoleReq("/api")
                 .setContentType(ContentTypes.APPLICATION_JSON_UTF8)
                 .setBody(JSON.encode(api)).post();
         if(!response.is2xx()){
@@ -105,16 +110,40 @@ public class ConsoleClient implements EventHandler<ActionEvent> {
     }
     
     public void deleteApi(String apiId){
-        HttpResponse response = request(config.getConsole()+"/api/"+apiId).setMethod(HTTP.Method.DELETE).send();
+        HttpResponse response = consoleReq("/api/"+apiId).setMethod(HTTP.Method.DELETE).send();
         if(!response.is2xx()){
             throw new RuntimeException(response.getStatus() + ":" + response.getString());
         }
+    }
+    
+    public List<RestApi> queryApi(String filters){
+        try {
+            HttpResponse response = consoleReq("/api")
+                    .setMethod(HTTP.Method.GET).addQueryParam("filters",filters).send();
+            return JSON.parse(response.getString()).asJsonArray().asList().stream()
+                    .map(o -> new RestApi((Map<String, Object>) o)).collect(Collectors.toList());
+        }catch (Exception e){
+            e.printStackTrace();
+            log.debug(e.getMessage());
+            throw e;
+        }
+    }
+    
+    public void importApi(String body){
+        HttpResponse response = consoleReq("/apiimport").setMethod(HTTP.Method.POST)
+                .addHeader(Headers.CONTENT_TYPE,ContentTypes.APPLICATION_JSON_UTF8)
+                .setBody(body).send();
+        log.debug(response.getStatus() + ":" + response.getString());
     }
     
     private @Inject ServerConfig config;
     private @Inject HttpClient httpClient;
     private User selectedUser;
     private Client selectedClient;
+    
+    private HttpRequest consoleReq(String uri){
+        return request(config.getConsole()+uri);
+    }
     
     private HttpRequest request(String url){
         String at = getAccessToken();

@@ -16,6 +16,7 @@
 
 package net.bingosoft.console.client.tests;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import leap.core.annotation.Bean;
 import leap.core.annotation.Inject;
@@ -23,9 +24,13 @@ import net.bingosoft.console.client.model.RestApi;
 import net.bingosoft.console.client.service.ConsoleClient;
 import net.bingosoft.console.client.support.Logger;
 
+import java.util.List;
+import java.util.UUID;
+
 /**
  * @author kael.
  */
+@Bean
 public class ApiManagerTester implements Tester {
     
     protected @Inject ConsoleClient client;
@@ -38,11 +43,31 @@ public class ApiManagerTester implements Tester {
 
     @Override
     public <T extends Event> void runTest(T e) {
+        //test();
+        deleteAll();
+    }
+    
+    private void test(){
         log.info("创建API");
-        RestApi api = client.createApi();
+        RestApi api = client.createApi(UUID.randomUUID().toString());
         log.info("创建API成功："+api.getId());
         log.info("删除API："+api.getId());
         client.deleteApi(api.getId());
         log.info("删除API成功："+api.getId());
+    }
+    
+    private void deleteAll(){
+        List<RestApi> apis = client.queryApi("name like '%%'");
+        log.info("一共"+apis.size()+"个API");
+        apis.forEach(api -> {
+            try {
+                log.info("开始删除API："+api.getName());
+                client.deleteApi(api.getId());
+                log.info("删除API："+api.getName()+"成功");
+            }catch (Exception e1){
+                e1.printStackTrace();
+                log.info("删除API："+api.getName()+"出错："+e1.getMessage());
+            }
+        });
     }
 }

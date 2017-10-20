@@ -16,23 +16,15 @@
 
 package net.bingosoft.console.client.service;
 
-import leap.core.BeanFactory;
-import leap.core.annotation.Bean;
-import leap.core.ioc.PostCreateBean;
-import leap.lang.Chars;
 import leap.lang.Charsets;
 import leap.lang.New;
 import leap.lang.Strings;
 import leap.lang.codec.Base64;
-import leap.lang.http.ContentTypes;
 import leap.lang.http.HTTP;
 import leap.lang.json.JSON;
 import net.bingosoft.console.client.model.ESQuery;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
@@ -41,29 +33,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author kael.
  */
-@Bean
-public class ESClient implements PostCreateBean{
+public class ESClient{
     
-    private RestClient restClient;
+    private final RestClient restClient;
+    
+    public static final String user = "elastic";
+    public static final String password = "8rmc3ZJ9yr";
+    
+    public static final String defaultScheme = "http";
+    public static final String defaultHost = "10.201.76.136";
+    public static final String defaultPort = "9200";
 
-    private String user = "elastic";
-    private String password = "8rmc3ZJ9yr";
-    
-    @Override
-    public void postCreate(BeanFactory factory) throws Throwable {
-        String basic = Base64.encode(Strings.format("{0}:{1}",user,password));
-        String header = Strings.format("Basic {0}",basic);
-        restClient = RestClient.builder(new HttpHost("10.201.76.136", 9200, "http"))
-                .setDefaultHeaders(new Header[]{new BasicHeader("Authorization",header)})
-                .build();
+    public ESClient(RestClient restClient) {
+        this.restClient = restClient;
     }
-    
+
     public Map<String,Object> query(ESQuery query){
         try {
             Response resp = restClient.performRequest(HTTP.Method.GET.name(),query.getEndpoint(), New.hashMap(),query.getEntity());
@@ -79,4 +68,24 @@ public class ESClient implements PostCreateBean{
             return null;
         }
     }
+    
+    public void close(){
+        try {
+            restClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static ESClient newClient(String host, int port, String scheme, String account, String password){
+        String basic = Base64.encode(Strings.format("{0}:{1}",account,password));
+        String header = Strings.format("Basic {0}",basic);
+        ESClient client = new ESClient(
+            RestClient.builder(new HttpHost(host, port, scheme))
+            .setDefaultHeaders(new Header[]{new BasicHeader("Authorization",header)})
+            .build()
+        );
+        return client;
+    }
+    
 }
